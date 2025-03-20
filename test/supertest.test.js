@@ -12,9 +12,11 @@ let expect;
 const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 const baseURL = `http://${BASE_URL}:${PORT}`;
+const TEST_EMAIL = process.env.TEST_EMAIL
+const TEST_PASSWORD = process.env.TEST_PASSWORD
 
 let token;
-let testUser = { email: "", password: "" };
+let testUser = { email: TEST_EMAIL, password: TEST_PASSWORD };
 
 describe("Auth Controller API", function () {
   this.timeout(15000);
@@ -27,8 +29,8 @@ describe("Auth Controller API", function () {
     try {
       const userData = {
         name: faker.person.fullName(),
-        email: faker.internet.email(),
-        password: "Password@123",
+        email: testUser?.email,
+        password: testUser?.password,
       };
 
       const response = await axios.post(`${baseURL}/api/v1/auth/register`, userData);
@@ -48,7 +50,6 @@ describe("Auth Controller API", function () {
       if (!testUser.email || !testUser.password) {
         expect.fail("No test user registered for login test");
       }
-
 
       const response = await axios.post(`${baseURL}/api/v1/auth/login`, {
         email: testUser.email,
