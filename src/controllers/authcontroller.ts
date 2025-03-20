@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
+const JWT_SECRET = process.env.JWT_SECRET || "sefrtg"
 
 // Generate JWT Token
 const generateToken = (userId: string): string => {
@@ -14,8 +14,8 @@ const generateToken = (userId: string): string => {
 };
 
 // 🔐 Register User
-export const register = async (req: Request, res: Response)=> {
-    const { name,  email, password } = req.body;
+export const register = async (req: Request, res: Response) => {
+    const { name, email, password, } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response)=> {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ name,  email, password: hashedPassword });
+        const user = new User({ name, salt: "1q2wef4rf", email, password: hashedPassword });
         await user.save();
 
         return res.status(201).json({ message: "User created successfully", user });
@@ -32,7 +32,7 @@ export const register = async (req: Request, res: Response)=> {
         console.error("Registration Error:", err);
         return res.status(500).json({ message: "Internal Server Error" });
     }
-  };
+};
 
 // 🔑 Login User
 export const login = async (req: Request, res: Response) => {
@@ -44,17 +44,19 @@ export const login = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
-
+      
         // Compare Password
         const isMatch = await bcrypt.compare(password, user.password);
+
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
-        }
+        } else {
 
-        res.status(200).json({
-            message: "Login successful",
-            token: generateToken(user.id),
-        });
+            res.status(200).json({
+                message: "Login successful",
+                token: generateToken(user.email),
+            });
+        }
     } catch (error: any) {
         console.error("Login Error:", error);
         return res.status(500).json({ message: "Internal Server Error" });
