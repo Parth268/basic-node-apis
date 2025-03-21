@@ -7,7 +7,7 @@ import crypto from "crypto";
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || "sefrtg"
+const JWT_SECRET = process.env.JWT_SECRET 
 
 // Generate JWT Token
 const generateToken = (userId: string): string => {
@@ -19,16 +19,20 @@ const generateUserHashCode = (): string => {
     return crypto.randomBytes(16).toString("hex"); // 16 bytes = 32 hex characters
 };
 
+const generateUserApiKey = (): string => {
+    return crypto.randomBytes(20).toString("hex"); // 20 bytes = 32 hex characters
+}
+
 
 // 🔐 Register User
 export const register = async (req: Request, res: Response) => {
-    const { name, email, password, authDeviceKey } = req.body;
+    const { name, email, password, phoneNumber, authDeviceKey } = req.body;
 
     try {
         // Validate required fields
         console.log(req.body)
         if (!name || !email || !password || !authDeviceKey) {
-            return res.status(400).json({ message: "name, email, password, authDeviceKey \nAll fields are required" });
+            return res.status(400).json({ message: "name, email, password,phoneNumber, authDeviceKey \nAll fields are required" });
         }
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -42,7 +46,9 @@ export const register = async (req: Request, res: Response) => {
             password: hashedPassword,
             isActive: true,
             logStatus: false,
-            userHashCode: generateUserHashCode() ,
+            phoneNumber,
+            userHashCode: generateUserHashCode(),
+            userApiKey: generateUserApiKey(),
             isAdmin: false,
             authDeviceKey,
         });
@@ -77,6 +83,7 @@ export const login = async (req: Request, res: Response) => {
             res.status(200).json({
                 message: "Login successful",
                 token: generateToken(user.email),
+                devicekey: user?.authDeviceKey
             });
         }
     } catch (error: any) {

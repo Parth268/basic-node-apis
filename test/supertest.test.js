@@ -16,7 +16,7 @@ const TEST_EMAIL = process.env.TEST_EMAIL
 const TEST_PASSWORD = process.env.TEST_PASSWORD
 
 let token;
-let testUser = { email: TEST_EMAIL, password: TEST_PASSWORD, authDeviceKey: "" };
+let testUser = { email: TEST_EMAIL, password: TEST_PASSWORD, authDeviceKey: faker.string.uuid() };
 
 describe("Auth Controller API", function () {
   this.timeout(15000);
@@ -32,6 +32,7 @@ describe("Auth Controller API", function () {
         email: faker.internet.email().toLocaleLowerCase(), // Ensure a unique email
         password: testUser?.password, // Use a strong password
         authDeviceKey: faker.string.uuid(), // Generate a random authDeviceKey
+        phoneNumber:"3456756756",
       };
 
       // console.log(userData)
@@ -64,13 +65,16 @@ describe("Auth Controller API", function () {
         password: testUser.password,
       });
 
+      // console.log("response ",response.data)
 
       expect(response.status).to.equal(200);
       expect(response.data.message).to.equal("Login successful");
       expect(response.data).to.have.property("token");
+      expect(response.data).to.have.property("devicekey");
 
       // Store token for further tests if needed
       token = response.data.token;
+      testUser.authDeviceKey = response?.data.devicekey
     } catch (error) {
       expect.fail(`API request failed: ${error.response?.data || error.message}`);
     }

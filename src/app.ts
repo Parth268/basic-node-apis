@@ -10,7 +10,8 @@ import { csrfProtection } from "./middlewares/csrfProtection";
 import { errorHandler } from "./middlewares/errorHandler";
 import { corsOptions } from "./config/security";
 import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
+import databaseRoutes from './routes/database.routes'
+// import userRoutes from "./routes/user.routes";
 import connectDB from "./config/db";
 
 import rateLimit from "express-rate-limit";
@@ -52,11 +53,9 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(hpp());
 app.use(mongoSanitize());
 
-// 🚀 API Routes
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/user", userRoutes);
-
-// 🛑 Error Handling Middleware
+// app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/database", databaseRoutes)
 app.use(errorHandler);
 
 export default app;

@@ -11,17 +11,28 @@ declare module "express-serve-static-core" {
     }
 }
 
-// 🔐 Middleware to Authenticate JWT
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.header("Authorization")?.split(" ")[1]; // Extract Bearer Token
-
-    if (!token) return res.status(401).json({ message: "Access Denied. No Token Provided" });
-
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
-        req.user = { id: decoded.userId }; // Attach user ID to request
+        console.log(req.headers.authorization)
+        if (!req.headers || !req.headers.authorization) {
+            return res.status(401).json({ msg: "No token, authorization denied" });
+        }
+
+        const authHeader = req.headers.authorization;
+
+        console.log("authHeader ",authHeader)
+        
+        if (!authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ msg: "Invalid token format" });
+        }
+
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+        
+        req.user = decoded; // Attach user data to request
         next();
     } catch (error) {
-        res.status(403).json({ message: "Invalid or Expired Token" });
+        console.error("JWT Error:", error);
+         res.status(401).json({ msg: "Authorization failed" });
     }
 };

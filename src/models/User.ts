@@ -10,6 +10,8 @@ interface IUser extends Document {
     userHashCode: string;
     isAdmin: boolean;
     authDeviceKey: string;
+    userApiKey: string;
+    phoneNumber:string;
     comparePassword(enteredPassword: string): Promise<boolean>;
 }
 
@@ -53,7 +55,15 @@ const UserSchema = new Schema<IUser>(
         authDeviceKey: {
             type: String,
             required: [true, "Auth Device key is required"]
-        }
+        },
+        phoneNumber:{
+            type: String,
+            required: [true, "Phone Number is required"]
+        },
+        userApiKey: {
+            type: String,
+            required: [true, "Auth Device key is required"]
+        },
     },
     { timestamps: true }
 );
