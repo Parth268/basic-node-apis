@@ -1,11 +1,15 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import bcrypt from "bcryptjs";
 
 // User Interface for Type Safety
 interface IUser extends Document {
     name: string;
     email: string;
     password: string;
+    isActive: boolean;
+    logStatus: boolean;
+    userHashCode: string;
+    isAdmin: boolean;
+    authDeviceKey: string;
     comparePassword(enteredPassword: string): Promise<boolean>;
 }
 
@@ -30,6 +34,26 @@ const UserSchema = new Schema<IUser>(
             required: [true, "Password is required"],
             minlength: [6, "Password must be at least 6 characters"],
         },
+        isActive: {
+            type: Boolean,
+            required: [true, "Is Active is required"],
+        },
+        logStatus: {
+            type: Boolean,
+            required: [true, "log Status is required"]
+        },
+        isAdmin: {
+            type: Boolean,
+            required: [true, "Is Admin is required"]
+        },
+        userHashCode: {
+            type: String,
+            required: [true, "Hash Code is required"]
+        },
+        authDeviceKey: {
+            type: String,
+            required: [true, "Auth Device key is required"]
+        }
     },
     { timestamps: true }
 );

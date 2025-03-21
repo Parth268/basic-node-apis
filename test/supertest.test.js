@@ -16,7 +16,7 @@ const TEST_EMAIL = process.env.TEST_EMAIL
 const TEST_PASSWORD = process.env.TEST_PASSWORD
 
 let token;
-let testUser = { email: TEST_EMAIL, password: TEST_PASSWORD };
+let testUser = { email: TEST_EMAIL, password: TEST_PASSWORD, authDeviceKey: "" };
 
 describe("Auth Controller API", function () {
   this.timeout(15000);
@@ -29,21 +29,29 @@ describe("Auth Controller API", function () {
     try {
       const userData = {
         name: faker.person.fullName(),
-        email: testUser?.email,
-        password: testUser?.password,
+        email: faker.internet.email().toLocaleLowerCase(), // Ensure a unique email
+        password: testUser?.password, // Use a strong password
+        authDeviceKey: faker.string.uuid(), // Generate a random authDeviceKey
       };
+
+      // console.log(userData)
 
       const response = await axios.post(`${baseURL}/api/v1/auth/register`, userData);
       expect(response.status).to.equal(201);
       expect(response.data.message).to.equal("User created successfully");
+      expect(response.data.user).to.have.property("email", userData.email);
+      expect(response.data.user).to.have.property("isActive", true);
+      expect(response.data.user).to.have.property("logStatus", false);
 
       // Store test user credentials for login
       testUser.email = userData.email;
       testUser.password = userData.password;
+      testUser.authDeviceKey = userData.authDeviceKey; // Store authDeviceKey for further tests
     } catch (error) {
-      expect.fail(`API request failed: ${error.response?.data || error.message}`);
+      expect.fail(`API request failed: ${error.response?.data?.message || error.message}`);
     }
   });
+
 
   it("should log in an existing user", async function () {
     try {
