@@ -7,7 +7,7 @@ dotenv.config();
 
 const DROP_TOKEN = process.env.DROP_TOKEN
 
-router.post("/drop-all", async (req, res) => {
+router.post("/drop-all", authenticateToken,async (req, res) => {
     try {
 
         const { drop_token } = req.body

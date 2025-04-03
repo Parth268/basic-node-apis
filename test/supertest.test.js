@@ -35,7 +35,6 @@ describe("Auth Controller API", function () {
         phoneNumber:"3456756756",
       };
 
-      // console.log(userData)
 
       const response = await axios.post(`${baseURL}/api/v1/auth/register`, userData);
       expect(response.status).to.equal(201);
@@ -43,6 +42,7 @@ describe("Auth Controller API", function () {
       expect(response.data.user).to.have.property("email", userData.email);
       expect(response.data.user).to.have.property("isActive", true);
       expect(response.data.user).to.have.property("logStatus", false);
+      console.log(response.data)
 
       // Store test user credentials for login
       testUser.email = userData.email;

@@ -12,11 +12,12 @@ let expect;
 const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 const baseURL = `http://${BASE_URL}:${PORT}`;
-const TEST_EMAIL = process.env.TEST_EMAIL;
-const TEST_PASSWORD = process.env.TEST_PASSWORD;
+const TEST_EMAIL = process.env.TEST_EMAIL
+const TEST_PASSWORD = process.env.TEST_PASSWORD
 
 let token;
-let testUser = { email: TEST_EMAIL, password: TEST_PASSWORD };
+let testUser = { email: TEST_EMAIL, password: TEST_PASSWORD, authDeviceKey: faker.string.uuid() };
+
 
 describe("Clean all and Drop database API", function () {
     this.timeout(15000);
